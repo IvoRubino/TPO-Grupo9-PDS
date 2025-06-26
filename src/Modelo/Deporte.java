@@ -1,48 +1,40 @@
+
 package Modelo;
 
 public class Deporte {
+
+    private int id;               // ← NUEVO
     private String nombre;
     private String descripcion;
     private int minJugadores;
     private int maxJugadores;
 
-    public Deporte(String nombre, String descripcion, int minJugadores, int maxJugadores) {
+    /* constructor sin id — el controller lo asigna internamente */
+    public Deporte(String nombre, String descripcion,
+                   int minJugadores, int maxJugadores) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.minJugadores = minJugadores;
         this.maxJugadores = maxJugadores;
     }
 
+    /* getters/setters */
+    public int getId()              { return id; }
+    public void setId(int id)       { this.id = id; }
 
-    public String getNombre() {
-        return nombre;
-    }
+    public String getNombre()       { return nombre; }
+    public void setNombre(String n) { this.nombre = n; }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+    public String getDescripcion()  { return descripcion; }
+    public void setDescripcion(String d) { this.descripcion = d; }
 
-    public int getMaxJugadores() {
-        return maxJugadores;
-    }
+    public int getMinJugadores()    { return minJugadores; }
+    public void setMinJugadores(int m) { this.minJugadores = m; }
 
-    public void setMaxJugadores(int maxJugadores) {
-        this.maxJugadores = maxJugadores;
-    }
+    public int getMaxJugadores()    { return maxJugadores; }
+    public void setMaxJugadores(int m) { this.maxJugadores = m; }
 
-    public int getMinJugadores() {
-        return minJugadores;
-    }
-
-    public void setMinJugadores(int minJugadores) {
-        this.minJugadores = minJugadores;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    @Override public String toString() {
+        return "[" + id + "] " + nombre;
     }
 }
