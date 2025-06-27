@@ -10,22 +10,23 @@ import Modelo.GeoLocalizacion;
  */
 public class PartidoDTO {
 
-    private int deporteId;
-    private Date fechaHora;                       // ⇢ java.util.Date para encajar con tu clase Partido
-    private GeoLocalizacion ubicacion;
-    private List<Integer> jugadoresIds;           // opcional, pueden venir vacíos
-    private IEstrategiaEmparejamiento estrategia; // opcional, se puede setear luego
+    private int    deporteId;
+    private Date   fechaHora;
+    private String direccion;              
+    private List<Integer> jugadoresIds;
+    private IEstrategiaEmparejamiento estrategia;
 
-    /* --- getters / setters --- */
+    /* getters / setters */
+    public String getDireccion()                { return direccion; }
+    public void   setDireccion(String d)        { this.direccion = d; }
+    
     public int getDeporteId()                         { return deporteId; }
     public void setDeporteId(int deporteId)           { this.deporteId = deporteId; }
 
     public Date getFechaHora()                        { return fechaHora; }
     public void setFechaHora(Date fechaHora)          { this.fechaHora = fechaHora; }
 
-    public GeoLocalizacion getUbicacion()             { return ubicacion; }
-    public void setUbicacion(GeoLocalizacion ubicacion){ this.ubicacion = ubicacion; }
-
+   
     public List<Integer> getJugadoresIds()            { return jugadoresIds; }
     public void setJugadoresIds(List<Integer> ids)    { this.jugadoresIds = ids; }
 

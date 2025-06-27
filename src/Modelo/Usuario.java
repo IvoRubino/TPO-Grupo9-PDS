@@ -1,47 +1,59 @@
 package Modelo;
 
-import java.io.*;
 import java.util.*;
 
 public class Usuario {
 
-    private int id;
+    private int    id;
     private String username;
     private String email;
     private String password;
+
+    /* NUEVOS campos */
+    private String            direccion;      // texto
+    private GeoLocalizacion   ubicacion;      // lat/lon derivada
+
     private MedioNotificacion notificacionDePreferencia;
-    private List <Deporte> favoritos;
-    private GeoLocalizacion ubicacion;
-    private List<PracticaDeporte> practicasDeporte;
+    private List<Deporte>     favoritos       = new ArrayList<>();
+    private List<PracticaDeporte> practicasDeporte = new ArrayList<>();
 
-
-    public Usuario(int id, String username, String password, String email, GeoLocalizacion ubicacion) {
-        this.id = id;
+    public Usuario(int id,
+                   String username,
+                   String password,
+                   String email,
+                   String direccion) {
+        this.id       = id;
         this.username = username;
         this.password = password;
-        this.email = email;
-        this.ubicacion = ubicacion;
+        this.email    = email;
+        setDireccion(direccion);             // genera ubicacion
     }
 
-    public int getId() {
-        return id;
+    /* getters / setters principales */
+    public int    getId()            { return id; }
+    public String getUsername()      { return username; }
+    public String getEmail()         { return email; }
+    public String getDireccion()     { return direccion; }
+    public GeoLocalizacion getUbicacion() { return ubicacion; }
+
+    public void setDireccion(String dir) {
+        this.direccion = dir;
+        this.ubicacion = GeoLocalizacion.obtenerCoordenadas(dir);
     }
+
+  
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
-    }
+
 
     public void setUsername(String username) {
         this.username = username;
     }
 
-    public String getEmail() {
-        return email;
-    }
+
 
     public void setEmail(String email) {
         this.email = email;
@@ -71,9 +83,7 @@ public class Usuario {
         this.favoritos = favoritos;
     }
 
-    public GeoLocalizacion getUbicacion() {
-        return ubicacion;
-    }
+ 
 
     public void setUbicacion(GeoLocalizacion ubicacion) {
         this.ubicacion = ubicacion;

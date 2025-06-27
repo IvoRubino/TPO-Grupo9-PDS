@@ -4,8 +4,6 @@ package Controller;
 import Modelo.*;
 import Modelo.Emparejar.IEstrategiaEmparejamiento;
 import Modelo.DTO.PartidoDTO;
-import Modelo.Deporte;
-import Modelo.Usuario;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -36,14 +34,14 @@ public class PartidoController {
     public void crearPartido(PartidoDTO dto) {
 
         Deporte dep = deporteCtrl.obtenerPorId(dto.getDeporteId());
-        if (dep == null) throw new IllegalArgumentException("Deporte inexistente");
+    if (dep == null) throw new IllegalArgumentException("Deporte inexistente");
 
-        Partido p = new Partido(
-                secuenciaId,                         
-                dto.getFechaHora(),
-                dep,
-                dto.getUbicacion()
-        );
+    Partido p = new Partido(
+            secuenciaId,
+            dto.getFechaHora(),
+            dep,
+            dto.getDireccion()     // <<--- String
+    );
         
         // Establecer estrategia si viene en el DTO
         if (dto.getEstrategia() != null) {
@@ -102,6 +100,34 @@ public class PartidoController {
                               IEstrategiaEmparejamiento estrategia) {
         buscarPartido(partidoId).setEstrategia(estrategia);
     }
+public void imprimirPartido(int partidoId) {
+    Partido p = buscarPartido(partidoId);
+
+    System.out.println("═══════════════════════════════════════");
+    System.out.println("*  Partido #" + p.getId());
+    System.out.println("Deporte: " + p.getDeporte().getNombre());
+    System.out.println("Fecha:   " + p.getFecha());
+
+    System.out.println("Dirección: " + p.getDireccion());
+    GeoLocalizacion loc = p.getCoordenadas();
+    if (loc != null)
+        System.out.println("  * [lat=" + loc.getLatitud() + ", lon=" + loc.getLongitud() + "]");
+
+    System.out.println("Estado: " + p.getEstado().getClass().getSimpleName());
+
+    System.out.println("Jugadores:");
+    if (p.getJugadores().isEmpty()) {
+        System.out.println("  (sin jugadores aún)");
+    } else {
+        p.getJugadores().forEach(u ->
+            System.out.println("  - ID: " + u.getId() + ", " + u.getUsername()));
+    }
+
+    System.out.println("Estrategia de emparejamiento: " +
+        (p.getEstrategia() != null ?
+                p.getEstrategia().getClass().getSimpleName() : "(ninguna)"));
+    System.out.println("═══════════════════════════════════════");
+}
 
     /* ------------------------------------------------------------
        getPartido() con filtro 

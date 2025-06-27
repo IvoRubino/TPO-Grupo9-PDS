@@ -1,74 +1,55 @@
 package Modelo;
 
-import java.io.*;
-import java.util.*;
-
 public class PracticaDeporte {
 
-    private Usuario usuario;
-
-    private Deporte deporte;
-
-    private Boolean favorito;
-
+    private Usuario    usuario;
+    private Deporte    deporte;
+    private boolean    favorito = false;
     private SkillLevel skillLevel;
+    private int        partidosJugados = 0;
 
-    private int partidosJugados;
-
-
-    public PracticaDeporte(Usuario usuario, Deporte deporte, SkillLevel skillLevel) {
-        this.usuario = usuario;
-        this.deporte = deporte;
+    /* ---------- ctor ---------- */
+    public PracticaDeporte(Usuario usuario,
+                           Deporte deporte,
+                           SkillLevel skillLevel) {
+        this.usuario    = usuario;
+        this.deporte    = deporte;
         this.skillLevel = skillLevel;
     }
 
-    public void actualzarSkillLevel(Enum SkillLevel) {
-        // TODO implement here
-        return null;
+    /* ---------- operaciones de dominio ---------- */
+
+    /** Cambia el nivel de habilidad */
+    public void actualizarSkillLevel(SkillLevel nuevoNivel) {
+        this.skillLevel = nuevoNivel;
     }
 
-    public void esFavorito(boolean favorito) {
-        // TODO implement here
-        return null;
+    /** Marca (o desmarca) como deporte favorito del usuario */
+    public void esFavorito(boolean esFav) {
+        this.favorito = esFav;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    /** Incrementa el contador de partidos jugados */
+    public void registrarPartidoJugado() {
+        this.partidosJugados++;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
+    /* ---------- getters / setters ---------- */
+    public Usuario getUsuario()           { return usuario; }
+    public void    setUsuario(Usuario u)  { this.usuario = u; }
 
-    public int getPartidosJugados() {
-        return partidosJugados;
-    }
+    public Deporte getDeporte()           { return deporte; }
+    public void    setDeporte(Deporte d)  { this.deporte = d; }
 
-    public void setPartidosJugados(int partidosJugados) {
-        this.partidosJugados = partidosJugados;
-    }
+    public boolean isFavorito()           { return favorito; }
+    public void    setFavorito(boolean f) { this.favorito = f; }
 
-    public SkillLevel getSkillLevel() {
-        return skillLevel;
-    }
+    public SkillLevel getSkillLevel()     { return skillLevel; }
+    public void      setSkillLevel(SkillLevel s){ this.skillLevel = s; }
 
-    public void setSkillLevel(SkillLevel skillLevel) {
-        this.skillLevel = skillLevel;
-    }
-
+    public int getPartidosJugados()       { return partidosJugados; }
+    public void setPartidosJugados(int p) { this.partidosJugados = p; }
     public Boolean getFavorito() {
-        return favorito;
-    }
-
-    public void setFavorito(Boolean favorito) {
-        this.favorito = favorito;
-    }
-
-    public Deporte getDeporte() {
-        return deporte;
-    }
-
-    public void setDeporte(Deporte deporte) {
-        this.deporte = deporte;
-    }
+    return favorito;
+}
 }

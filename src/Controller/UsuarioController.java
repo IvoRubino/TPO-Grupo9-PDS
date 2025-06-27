@@ -5,6 +5,7 @@ import Modelo.*;
 import Modelo.DTO.UsuarioDTO;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Gestiona los objetos Usuario en memoria.
@@ -47,7 +48,7 @@ public class UsuarioController {
         u.setEmail(dtoActualizado.getEmail());
         u.setPassword(dtoActualizado.getPassword());
         u.setNotificacionDePreferencia(dtoActualizado.getNotificacionDePreferencia());
-        u.setUbicacion(dtoActualizado.getUbicacion());
+        u.setDireccion(dtoActualizado.getDireccion());
 
         // Sincronizo map por username si cambia
         usuariosPorUsername.remove(u.getUsername());
@@ -68,19 +69,52 @@ public class UsuarioController {
         if (u == null) { throw new NoSuchElementException("Usuario no encontrado"); }
         if (u.getFavoritos() != null) { u.getFavoritos().remove(deporte); }
     }
+     /* ------------------------------------------------------------
+       imprimirUsuario()
+       ------------------------------------------------------------ */
+    /** Muestra en consola la info relevante de un usuario. */
+public void imprimirUsuario(Usuario u) {
+    System.out.println("═══════════════════════════════════════");
+    System.out.println("* Usuario: " + u.getUsername());
+
+    // Deportes favoritos
+    if (u.getFavoritos() != null && !u.getFavoritos().isEmpty()) {
+        System.out.print("Favoritos: ");
+        System.out.println(u.getFavoritos().stream()
+                .map(Deporte::getNombre)
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("(ninguno)"));
+    } else {
+        System.out.println("Favoritos: (ninguno)");
+    }
+
+    // Skill level por deporte
+    System.out.println("Skill level:");
+    if (u.getPracticasDeporte() != null && !u.getPracticasDeporte().isEmpty()) {
+        for (PracticaDeporte pd : u.getPracticasDeporte()) {
+            String estrella = Boolean.TRUE.equals(pd.getFavorito()) ? "*Favorito*" : "";
+            System.out.println("  * " + pd.getDeporte().getNombre()
+                             + " = " + pd.getSkillLevel() + " " + estrella);
+        }
+    } else {
+        System.out.println("  (sin prácticas registradas)");
+    }
+
+    System.out.println("═══════════════════════════════════════");
+}
+
 
     /* ==== utilidades privadas ==== */
 
-    private Usuario dtoToEntity(UsuarioDTO dto) {
-        return new Usuario(
-                /* id se setea luego */0,
-                dto.getUsername(),
-                dto.getPassword(),
-                dto.getEmail(),
-                dto.getUbicacion()
-        );
-    }
-
+ private Usuario dtoToEntity(UsuarioDTO dto) {
+    return new Usuario(
+            0,                                  // id se setea luego
+            dto.getUsername(),
+            dto.getPassword(),
+            dto.getEmail(),
+            dto.getDireccion()                  // ← dirección en texto
+    );
+}
     /* ==== getters de consulta opcionales ==== */
 
     public Usuario obtenerPorId(int id) { return usuariosPorId.get(id); }

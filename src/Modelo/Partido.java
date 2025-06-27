@@ -3,87 +3,62 @@ package Modelo;
 import Modelo.Emparejar.IEstrategiaEmparejamiento;
 import Modelo.EstadoPartido.IEstadoPartido;
 import Modelo.EstadoPartido.NecesitamosJugadores;
-import Modelo.Notificacion.Notificacion;
-import Modelo.Notificacion.Notificador;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-/**
- * Entidad raíz del dominio.
- */
 public class Partido {
 
-    // -------- atributos --------
+    /* ---------- atributos ---------- */
     private int id;
     private Date fecha;
     private Deporte deporte;
-    private GeoLocalizacion lugar;
-    private IEstadoPartido estado;
 
+    /** Dirección textual (ej. “Av. Corrientes 1234, CABA”) */
+    private String direccion;
+
+    /** Coordenadas obtenidas al setear la dirección (lat/lon) */
+    private GeoLocalizacion coordenadas;
+
+    private IEstadoPartido estado = new NecesitamosJugadores();
     private final List<Usuario> jugadores = new ArrayList<>();
 
-    /* Infra-utilidades para notificar cambios de estado */
-    private final Notificacion.Builder notiBuilder = new Notificacion.Builder();
-    private final Notificador          notificador = new Notificador();
+    private IEstrategiaEmparejamiento estrategia;
 
-    private IEstrategiaEmparejamiento  estrategia;
-
-    // -------- ctor --------
-    public Partido(int id, Date fechaHora, Deporte deporte, GeoLocalizacion lugar) {
-        this.id      = id;
-        this.fecha   = fechaHora;
-        this.deporte = deporte;
-        this.lugar   = lugar;
-        this.estado  = new NecesitamosJugadores();
+    /* ---------- ctor ---------- */
+    public Partido(int id,
+                   Date fechaHora,
+                   Deporte deporte,
+                   String direccion) {
+        this.id        = id;
+        this.fecha     = fechaHora;
+        this.deporte   = deporte;
+        setDireccion(direccion);           // ← genera las coordenadas
     }
 
-    // -------- getters / setters (solo los que uses) --------
-    public List<Usuario> getJugadores() { return jugadores; }
-
+    /* ---------- getters ---------- */
+    public int               getId()         { return id; }
+    public Date              getFecha()      { return fecha; }
+    public Deporte           getDeporte()    { return deporte; }
+    public String            getDireccion()  { return direccion; }
+    public GeoLocalizacion   getCoordenadas(){ return coordenadas; }
+    public IEstadoPartido    getEstado()     { return estado; }
+    public List<Usuario>     getJugadores()  { return jugadores; }
     public IEstrategiaEmparejamiento getEstrategia() { return estrategia; }
-    public void setEstrategia(IEstrategiaEmparejamiento estrategia) {
-        this.estrategia = estrategia;
-    }
 
-    // -------------------------------------------------------
-    public void agregarJugador(Usuario usuario) {
-        if (usuario != null && !jugadores.contains(usuario)) {
-            jugadores.add(usuario);
-        }
+    /* ---------- setters ---------- */
+    public void setDireccion(String dir) {
+        this.direccion   = dir;
+        this.coordenadas = GeoLocalizacion.obtenerCoordenadas(dir);
     }
+    public void setEstrategia(IEstrategiaEmparejamiento e) { this.estrategia = e; }
+    public void setEstado(IEstadoPartido e)                { this.estado     = e; }
 
-    public void removerJugador(Usuario usuario) {
-        jugadores.remove(usuario);
-    }
+    /* ---------- lógica de dominio ---------- */
+    public void agregarJugador(Usuario u)   { if (u!=null && !jugadores.contains(u)) jugadores.add(u); }
+    public void removerJugador(Usuario u)   { jugadores.remove(u); }
+    public void cancelarPartido()           { estado.cancelarPartido(this); }
 
-    public void cancelarPartido() {
-        // delegás al estado para que ejecute su propia lógica de cancelación
-       estado.cancelarPartido(this);
-    }
-
-    /** Devuelve los equipos emparejados o lista vacía si no hay estrategia. */
     public List<List<Usuario>> emparejar() {
-        if (estrategia == null) return Collections.emptyList();
-        return estrategia.emparejar(jugadores, this);
+        return estrategia == null ? Collections.emptyList()
+                                  : estrategia.emparejar(jugadores, this);
     }
-    // ---------- getters que faltaban ----------
-public int getId() {
-    return id;
-}
-
-public IEstadoPartido getEstado() {
-    return estado;
-}
-
-// (opcional) si querés seguir pudiendo cambiarlos:
-public void setId(int id) {
-    this.id = id;
-}
-
-public void setEstado(IEstadoPartido estado) {
-    this.estado = estado;
-}
 }

@@ -35,23 +35,24 @@ public class GeoLocalizacion {
 
     /**
      * Devuelve una ubicación aproximada para un nombre de lugar.
-     * Aquí iría la llamada real a un servicio de geocodificación.
      */
 public static GeoLocalizacion obtenerCoordenadas(String lugar) {
+    System.out.println("Timeout, esperando para volver a solicitar latitud y longitud...");
     try {
         String encodedLugar = URLEncoder.encode(lugar, StandardCharsets.UTF_8);
-        String url = "https://nominatim.openstreetmap.org/search?q=" + encodedLugar + "&format=json&limit=1";
+        String url = "https://nominatim.openstreetmap.org/search?q=" + encodedLugar
+                   + "&format=json&limit=1";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(url))
-            .header("User-Agent", "JavaGeolocalizacionApp/1.0") // Nominatim requiere esto
-            .GET()
-            .build();
+                .uri(URI.create(url))
+                .header("User-Agent", "JavaGeolocalizacionApp/1.0")
+                .GET()
+                .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response =
+                client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // Parsear respuesta JSON
         JSONParser parser = new JSONParser();
         JSONArray results = (JSONArray) parser.parse(response.body());
 
@@ -64,8 +65,7 @@ public static GeoLocalizacion obtenerCoordenadas(String lugar) {
     } catch (Exception e) {
         e.printStackTrace();
     }
-
-    return null; // no se pudo obtener
+    return null;
 }
 
     /* equals/hashCode para poder usar contains, HashMap, etc. */
