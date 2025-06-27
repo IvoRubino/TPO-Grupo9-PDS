@@ -1,94 +1,89 @@
 package Modelo;
 
 import Modelo.Emparejar.IEstrategiaEmparejamiento;
-import Modelo.EstadoPartido.*;
-import Modelo.GeoLocalizacion;
-import Modelo.Notificacion.Notificador;
+import Modelo.EstadoPartido.IEstadoPartido;
+import Modelo.EstadoPartido.NecesitamosJugadores;
 import Modelo.Notificacion.Notificacion;
+import Modelo.Notificacion.Notificador;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
- *  Entidad principal del dominio. Maneja su propio ciclo de vida
- *  delegando reglas a:
- *    – IEstrategiaEmparejamiento  (Strategy)
- *    – IEstadoPartido            (State)
- *    – Notificador               (Strategy de notificación)
+ * Entidad raíz del dominio.
  */
 public class Partido {
 
-    /* --------- atributos ---------- */
+    // -------- atributos --------
     private int id;
     private Date fecha;
     private Deporte deporte;
     private GeoLocalizacion lugar;
     private IEstadoPartido estado;
-    private final List<Usuario> jugadores = new ArrayList<>();
-    private final Notificacion.Builder notiBuilder = new Notificacion.Builder(); // util. interna
-    private final Notificador notificador = new Notificador();
-    private IEstrategiaEmparejamiento estrategia; // Agregar este campo
 
-    /* --------- ctor --------- */
-    public Partido(int id,
-                   Date fechaHora,
-                   Deporte deporte,
-                   GeoLocalizacion lugar) {
-        this.id = id;
-        this.fecha = fechaHora;
+    private final List<Usuario> jugadores = new ArrayList<>();
+
+    /* Infra-utilidades para notificar cambios de estado */
+    private final Notificacion.Builder notiBuilder = new Notificacion.Builder();
+    private final Notificador          notificador = new Notificador();
+
+    private IEstrategiaEmparejamiento  estrategia;
+
+    // -------- ctor --------
+    public Partido(int id, Date fechaHora, Deporte deporte, GeoLocalizacion lugar) {
+        this.id      = id;
+        this.fecha   = fechaHora;
         this.deporte = deporte;
-        this.lugar = lugar;
-        this.estado = new NecesitamosJugadores();
+        this.lugar   = lugar;
+        this.estado  = new NecesitamosJugadores();
     }
 
-    /* ============================================================
-       ==============  getters / setters  =========================
-       ============================================================ */
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-
-    public Deporte getDeporte() { return deporte; }
-    public void setDeporte(Deporte deporte) { this.deporte = deporte; }
-
-    public Date getFecha() { return fecha; }
-    public void setFecha(Date fecha) { this.fecha = fecha; }
-
-    public GeoLocalizacion getLugar() { return lugar; }
-    public void setLugar(GeoLocalizacion lugar) { this.lugar = lugar; }
-
-    public IEstadoPartido getEstado() { return estado; }
-    public void setEstado(IEstadoPartido estado) { this.estado = estado; }
-
+    // -------- getters / setters (solo los que uses) --------
     public List<Usuario> getJugadores() { return jugadores; }
-    
-    public IEstrategiaEmparejamiento getEstrategia() { return estrategia; }
-    public void setEstrategia(IEstrategiaEmparejamiento estrategia) { this.estrategia = estrategia; }
 
-    /* ============================================================
-                        Métodos faltantes
-       ============================================================ */
+    public IEstrategiaEmparejamiento getEstrategia() { return estrategia; }
+    public void setEstrategia(IEstrategiaEmparejamiento estrategia) {
+        this.estrategia = estrategia;
+    }
+
+    // -------------------------------------------------------
     public void agregarJugador(Usuario usuario) {
-        if (!jugadores.contains(usuario)) {
+        if (usuario != null && !jugadores.contains(usuario)) {
             jugadores.add(usuario);
         }
     }
-    
+
     public void removerJugador(Usuario usuario) {
         jugadores.remove(usuario);
     }
-    
+
     public void cancelarPartido() {
-        // Implementar lógica de cancelación
-        // Por ejemplo, cambiar estado o notificar
+        // delegás al estado para que ejecute su propia lógica de cancelación
+       estado.cancelarPartido(this);
     }
 
-    /* ============================================================
-                        Emparejar equipos
-       ============================================================ */
+    /** Devuelve los equipos emparejados o lista vacía si no hay estrategia. */
     public List<List<Usuario>> emparejar() {
-        if (estrategia != null) {
-            return estrategia.emparejar(jugadores, this);
-        }
-        // Si no hay estrategia, devolver lista vacía o lanzar excepción
-        return new ArrayList<>();
+        if (estrategia == null) return Collections.emptyList();
+        return estrategia.emparejar(jugadores, this);
     }
+    // ---------- getters que faltaban ----------
+public int getId() {
+    return id;
+}
+
+public IEstadoPartido getEstado() {
+    return estado;
+}
+
+// (opcional) si querés seguir pudiendo cambiarlos:
+public void setId(int id) {
+    this.id = id;
+}
+
+public void setEstado(IEstadoPartido estado) {
+    this.estado = estado;
+}
 }
